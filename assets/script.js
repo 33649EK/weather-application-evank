@@ -2,10 +2,12 @@ var latLon = []
 var currentWeatherData = []
 var cityName = ''
 
+//Sets current date to top of weatherInfo div
 $(document).ready(function () {
     $('#currentDate').text(`${dayjs().format('MMM D, YYYY')}`)
 })
 
+//Submits the inputted city to the geolocation apu
 $('#primarySubmit').on('click', function () {
     cityName = $('#cityInput').val().trim()
     if ($(`#${cityName}`).length === 0) {
@@ -15,8 +17,9 @@ $('#primarySubmit').on('click', function () {
     fetchLocation()
 })
 
-function fetchLocation() {
 
+//Grabs Latitude and Longitude for the city
+function fetchLocation() {
     console.log(cityName)
     var locationApi = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=9eb8c6aa4ea4ae6290f1970b6f5629eb`
 
@@ -28,6 +31,7 @@ function fetchLocation() {
                 console.log(coordinates);
                 console.log(latLon);
 
+                //Prints location information
                 if (coordinates[0].state) {
                     $('#location').text(`${coordinates[0].name}, ${coordinates[0].state}, ${coordinates[0].country}`)
                 } else {
@@ -40,7 +44,7 @@ function fetchLocation() {
 }
 
 
-
+//Grabs all necessary weather information
 function fetchWeather() {
     fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latLon[0]}&lon=${latLon[1]}&units=imperial&appid=9eb8c6aa4ea4ae6290f1970b6f5629eb`)
         .then(function (locationCurrentWeather) {
@@ -64,20 +68,25 @@ function fetchWeather() {
         });
 }
 
+//Prints today's weather to the document
 function weatherToday() {
     console.log(currentWeatherData[0])
     var currentIcon = currentWeatherData[0].weather[0].icon
     $('#currentIcon').attr('src', `https://openweathermap.org/img/w/${currentIcon}.png`)
+
     $('#temperature').text(`Temprature: ${currentWeatherData[0].main.temp} °F`)
+
     $('#wind').text(`Wind Speed: ${currentWeatherData[0].wind.speed} MPH`)
+
     $('#humidity').text(`Humidity: ${currentWeatherData[0].main.humidity} %`)
 
     console.log(latLon)
+
     currentWeatherData = []
 }
 
+//Creates 5 day forecast cards
 function forecast(filteredWeatherData) {
-
     console.log(filteredWeatherData[0])
 
     $('.forecast-card').remove()
@@ -103,7 +112,7 @@ function forecast(filteredWeatherData) {
     }
 }
 
-
+// Does the same as the submit button but with the search history buttons instead
 $('#searchedCities').on('click', `.previousSearch`, function (e) {
     e.preventDefault()
     var prevCityName = $(e.target).attr('id')
@@ -111,8 +120,8 @@ $('#searchedCities').on('click', `.previousSearch`, function (e) {
     fetchPreviousLocation(prevCityName)
 })
 
+//Grabs lat and lon from geolocation api
 function fetchPreviousLocation(prevCityName) {
-
     console.log(prevCityName)
     var previousLocationApi = `https://api.openweathermap.org/geo/1.0/direct?q=${prevCityName}&limit=1&appid=9eb8c6aa4ea4ae6290f1970b6f5629eb`
 
@@ -123,6 +132,7 @@ function fetchPreviousLocation(prevCityName) {
                 latLon.push(prevCoordinates[0].lon);
                 console.log(prevCoordinates);
                 console.log(latLon);
+                //Prints location information
                 if (prevCoordinates[0].state) {
                     $('#location').text(`${prevCoordinates[0].name}, ${prevCoordinates[0].state}, ${prevCoordinates[0].country}`)
                 } else {
