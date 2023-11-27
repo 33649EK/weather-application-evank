@@ -11,13 +11,15 @@
 body {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: center;
 
 }
 
 main {
     max-width: 1600px;
-    min-width: 768px;
+    min-width: 1200px;
+    display: flex;
+    flex-direction: row;
     margin-left: auto;
     margin-right: auto;
 }
@@ -43,4 +45,10 @@ main {
 
 button {
     width: 100%;
+}
+
+.forecast-card {
+    border: 2px solid black;
+    width: 140px;
+    margin: 0 10px 0 10px;
 }
