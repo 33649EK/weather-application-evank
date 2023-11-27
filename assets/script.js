@@ -11,6 +11,7 @@ $('#primarySubmit').on('click', function () {
     if ($(`#${cityName}`).length === 0) {
         $('#searchedCities').append(`<button id='${cityName}' class="previousSearch" type="button">${cityName}</button>`)
     }
+    $('#cityInput').val('')
     fetchLocation()
 })
 
@@ -26,6 +27,12 @@ function fetchLocation() {
                 latLon.push(coordinates[0].lon);
                 console.log(coordinates);
                 console.log(latLon);
+
+                if (coordinates[0].state) {
+                    $('#location').text(`${coordinates[0].name}, ${coordinates[0].state}, ${coordinates[0].country}`)
+                } else {
+                    $('#location').text(`${coordinates[0].name}, ${coordinates[0].country}`)
+                }
                 fetchWeather();
             });
     });
@@ -47,8 +54,7 @@ function fetchWeather() {
         .then(function (locationWeather) {
             return locationWeather.json()
                 .then(function (weather) {
-                    //console.log(weather);
-                    //console.log(weather.list);
+                    //ChatGTP helped to write following line.
                     var filteredWeatherData = weather.list.filter((obj => obj.dt_txt.includes("12:00:00")))
                     console.log(filteredWeatherData)
                     weatherToday()
@@ -100,15 +106,15 @@ function forecast(filteredWeatherData) {
 
 $('#searchedCities').on('click', `.previousSearch`, function (e) {
     e.preventDefault()
-    var cityName2 = $(e.target).attr('id')
-    console.log(cityName2)
-    fetchPreviousLocation(cityName2)
+    var prevCityName = $(e.target).attr('id')
+    console.log(prevCityName)
+    fetchPreviousLocation(prevCityName)
 })
 
-function fetchPreviousLocation(cityName2) {
+function fetchPreviousLocation(prevCityName) {
 
-    console.log(cityName2)
-    var previousLocationApi = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName2}&limit=1&appid=9eb8c6aa4ea4ae6290f1970b6f5629eb`
+    console.log(prevCityName)
+    var previousLocationApi = `https://api.openweathermap.org/geo/1.0/direct?q=${prevCityName}&limit=1&appid=9eb8c6aa4ea4ae6290f1970b6f5629eb`
 
     fetch(previousLocationApi).then(function (prevLocationData) {
         return prevLocationData.json()
@@ -117,6 +123,11 @@ function fetchPreviousLocation(cityName2) {
                 latLon.push(prevCoordinates[0].lon);
                 console.log(prevCoordinates);
                 console.log(latLon);
+                if (prevCoordinates[0].state) {
+                    $('#location').text(`${prevCoordinates[0].name}, ${prevCoordinates[0].state}, ${prevCoordinates[0].country}`)
+                } else {
+                    $('#location').text(`${prevCoordinates[0].name}, ${prevCoordinates[0].country}`)
+                }
                 fetchWeather();
             });
     });
