@@ -1,19 +1,22 @@
 var latLon = []
-
 var currentWeatherData = []
-
-var weatherData = []
+var cityName = ''
 
 $(document).ready(function () {
     $('#currentDate').text(`${dayjs().format('MMM D, YYYY')}`)
 })
 
-
 $('#primarySubmit').on('click', function () {
-    var cityName = $('#cityInput').val().trim()
+    cityName = $('#cityInput').val().trim()
+    if ($(`#${cityName}`).length === 0) {
+        $('#searchedCities').append(`<button id='${cityName}' class="previousSearch" type="button">${cityName}</button>`)
+    }
+    fetchLocation()
+})
 
-    //var searchedCities = document.createElement('li')
+function fetchLocation() {
 
+    console.log(cityName)
     var locationApi = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=9eb8c6aa4ea4ae6290f1970b6f5629eb`
 
     fetch(locationApi).then(function (locationData) {
@@ -26,11 +29,10 @@ $('#primarySubmit').on('click', function () {
                 fetchWeather();
             });
     });
-    console.log(cityName);
 
-    $('#searchedCities').append(`<button id='${cityName}' class="previousSearch" type="button">${cityName}</button>`)
+}
 
-})
+
 
 function fetchWeather() {
     fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latLon[0]}&lon=${latLon[1]}&units=imperial&appid=9eb8c6aa4ea4ae6290f1970b6f5629eb`)
@@ -41,17 +43,16 @@ function fetchWeather() {
                 });
         });
 
-
-
     fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${latLon[0]}&lon=${latLon[1]}&limit=5&units=imperial&appid=9eb8c6aa4ea4ae6290f1970b6f5629eb`)
         .then(function (locationWeather) {
             return locationWeather.json()
                 .then(function (weather) {
                     //console.log(weather);
                     //console.log(weather.list);
-                    weatherData.push(weather)
+                    var filteredWeatherData = weather.list.filter((obj => obj.dt_txt.includes("12:00:00")))
+                    console.log(filteredWeatherData)
                     weatherToday()
-                    forecast()
+                    forecast(filteredWeatherData)
                     latLon = []
                 });
         });
@@ -69,13 +70,13 @@ function weatherToday() {
     currentWeatherData = []
 }
 
-function forecast() {
-    weatherDataIndex = [0, 7, 15, 31, 39]
-    console.log(weatherData[0].list)
+function forecast(filteredWeatherData) {
+
+    console.log(filteredWeatherData[0])
 
     $('.forecast-card').remove()
 
-    for (i = 0; i < weatherDataIndex.length; i++) {
+    for (i = 0; i < filteredWeatherData.length; i++) {
         $('#forecast').append(`<div class='forecast-card bg-primary text-light'>
     <h5 id='date${i}'></h5>
     <img id='icon${i}' src="" alt="">
@@ -84,14 +85,40 @@ function forecast() {
     <h6 id='humidity${i}'></h6>
 </div>`)
 
-        var icon = weatherData[0].list[weatherDataIndex[i]].weather[0].icon
+        var icon = filteredWeatherData[i].weather[0].icon
+        console.log(icon)
         $(`#date${i}`).text(`${dayjs().add(i + 1, 'day').format('MMM D, YYYY')}`)
         $(`#icon${i}`).attr('src', `https://openweathermap.org/img/w/${icon}.png`)
-        $(`#temperature${i}`).text(`Temp: ${weatherData[0].list[weatherDataIndex[i]].main.temp} °F`)
-        $(`#wind${i}`).text(`Wind: ${weatherData[0].list[weatherDataIndex[i]].wind.speed} MPH`)
-        $(`#humidity${i}`).text(`Humidity: ${weatherData[0].list[weatherDataIndex[i]].main.humidity} %`)
+        $(`#temperature${i}`).text(`Temp: ${filteredWeatherData[i].main.temp} °F`)
+        $(`#wind${i}`).text(`Wind: ${filteredWeatherData[i].wind.speed} MPH`)
+        $(`#humidity${i}`).text(`Humidity: ${filteredWeatherData[i].main.humidity} %`)
 
 
     }
-    weatherData = []
+}
+
+
+$('#searchedCities').on('click', `.previousSearch`, function (e) {
+    e.preventDefault()
+    var cityName2 = $(e.target).attr('id')
+    console.log(cityName2)
+    fetchPreviousLocation(cityName2)
+})
+
+function fetchPreviousLocation(cityName2) {
+
+    console.log(cityName2)
+    var previousLocationApi = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName2}&limit=1&appid=9eb8c6aa4ea4ae6290f1970b6f5629eb`
+
+    fetch(previousLocationApi).then(function (prevLocationData) {
+        return prevLocationData.json()
+            .then(function (prevCoordinates) {
+                latLon.push(prevCoordinates[0].lat);
+                latLon.push(prevCoordinates[0].lon);
+                console.log(prevCoordinates);
+                console.log(latLon);
+                fetchWeather();
+            });
+    });
+
 }
