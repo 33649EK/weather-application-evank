@@ -1,0 +1,46 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#sidebar {
+    height: 100vh;
+    margin: 20px 10px 0 20px;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+
+}
+
+main {
+    max-width: 1600px;
+    min-width: 768px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#mainContent {
+    height: 100vh;
+    margin: 20px 20px 0 20px;
+}
+
+#container {
+    padding: 0 0 0 10px;
+}
+
+#weatherInfo {
+    height: 30vh;
+    border: 3px solid black
+}
+
+#cityInput {
+    width: 100%;
+    margin: 0 0 5px 0;
+}
+
+button {
+    width: 100%;
+}
