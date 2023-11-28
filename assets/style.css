@@ -34,13 +34,14 @@ main {
 }
 
 #weatherInfo {
-    height: 20vh;
+    height: 28vh;
     border: 3px solid black
 }
 
 #cityInput {
     width: 100%;
     margin: 0 0 5px 0;
+    text-align: center;
 }
 
 button {
@@ -55,6 +56,8 @@ button {
 
 #searchHistory {
     margin: 10px 0 0 0;
+    padding-bottom: 5px;
+    border-bottom: 2px solid black;
 }
 
 .previousSearch {
